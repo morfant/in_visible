@@ -1,0 +1,609 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset129 AppleGothic;\f2\fnil\fcharset0 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red191\green0\blue0;
+\red96\green96\blue96;\red0\green115\blue0;}
+\deftab720
+\pard\pardeftab720\ql\qnatural
+
+\f0\fs28 \cf2 Quarks\cf3 .gui;\
+\cf2 Arduino\cf3 .deviceList;\
+\cf2 ArduinoSMS\cf3 .
+\f1 port
+\f0 Devicelist;\
+\
+\
+<
+\f1 \'bc\'f8\'bc\'ad
+\f0 >\
+1. arduino on\
+2. test\
+3. average\
+4. osc responder\
+\
+\cf4 //connect\cf3 \
+p = \cf2 ArduinoSMS\cf3 (\cf5 "/dev/tty.usbserial-A600etFF"\cf3 , 115200); \cf4 //connecting to Arduino USB (3600 integer per second)\cf3 \
+p = \cf2 ArduinoSMS\cf3 (\cf5 "/dev/tty.usbmodem621"\cf3 , 115200); \cf4 //connecting to Arduino USB (3600 integer per second)\cf3 \
+p.close;\
+\
+(\cf4 //test\cf3 \
+p.action = \{ \cf2 |... msg|\cf3 \
+\
+\cf4 //				 ~a = msg[0]; //ANALOGS\cf3 \
+\cf4 //				 ~b = msg[1];\cf3 \
+\cf4 //				 ~c = msg[2];\cf3 \
+\cf4 //				 ~d = msg[3];\cf3 \
+\cf4 //				 ~e = msg[4];				 \cf3 \
+\cf4 //				 ~f = msg[5];\cf3 \
+\
+				 ~ao = msg[0]; \cf4 //ANALOGS\cf3 \
+				 ~bo = msg[1];\
+				 ~co = msg[2];\
+				 ~do = msg[3];\
+				 ~eo = msg[4];				 \
+				 ~fo = msg[5];\
+				 \
+				 ~d2 = msg[6]; \cf4 //DIGITALS				 \cf3 \
+				 ~d3 = msg[7];				 \
+				 ~d4 = msg[8];				 				 \
+				 ~d5 = msg[9];				 \
+				 ~d6 = msg[10];				 \
+				 ~d7 = msg[11];				 				 \
+				 ~d8 = msg[12];				 \
+				 ~d9 = msg[13];				 \
+		 				 \
+\
+\
+		\};\
+\
+fork\{\
+	\cf2 inf\cf3 .do\{\
+			[\cf5 "Analog"\cf3 ].postln;	\
+			[~a, ~b, ~c, ~d, ~e, ~f].postln;\
+			[~ao, ~bo, ~co, ~do, ~eo, ~fo].postln;			\
+			[\cf5 "Digital"\cf3 ].postln;\
+			[~d2, ~d3, ~d4, ~d5, ~d6, ~d7, ~d8, ~d9].postln;			\
+			0.1.wait;\
+		\}\
+	\}\
+);\
+\
+\
+(\cf4 //averaging every 10 values.\cf3 \
+~avrv = \cf2 Routine\cf3 (\{\
+			\cf2 inf\cf3 .do(\{\
+			\
+				fork\{\
+					~aa=\cf2 Array\cf3 .newClear(5);		\
+					~ba=\cf2 Array\cf3 .newClear(5);\
+					~ca=\cf2 Array\cf3 .newClear(5);		\
+					~da=\cf2 Array\cf3 .newClear(5);		\
+					~ea=\cf2 Array\cf3 .newClear(5);		\
+					~fa=\cf2 Array\cf3 .newClear(5);																				\
+					5.do\{ \cf2 |i|\cf3 \
+			\
+						~aa.put(i, ~ao);\
+						~ba.put(i, ~bo);\
+						~ca.put(i, ~co);\
+						~da.put(i, ~do);\
+						~ea.put(i, ~eo);	\
+						~fa.put(i, ~fo);															\
+\
+						0.03.wait;\
+						\};\
+						\
+\cf4 //	[~aa.mean, ~ba.mean, ~ca.mean, ~da.mean, ~ea.mean, ~fa.mean].postln;\cf3 \
+	~a = ~aa.mean;\
+	~b = ~ba.mean;\
+	~c = ~ca.mean;\
+	~d = ~da.mean;\
+	~e = ~ea.mean;\
+	~f = ~fa.mean;\
+									\
+\
+				\};\
+				0.2.wait;\
+			\})\
+	\}).play;\
+);\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf4 //OSC\cf3 \
+~did = 0;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+
+\f1\fs30 \cf3 			~max = \cf2 OSCresponder\cf3 (\cf2 nil\cf3 , \cf6 '/doing'\cf3 , \{\cf2 |time, resp, msg, addr|\cf3  ~did = msg[1].postln\}).add;
+\f0\fs28 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf4 //~max.remove;\cf3 \
+\pard\pardeftab720\ql\qnatural
+\cf3 )\
+\
+\
+(\cf4 //cube_run\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf3 ~avrv.play;\
+\pard\pardeftab720\ql\qnatural
+\cf3 \
+~ai = 0.2; \cf4 //Analog interval\cf3 \
+~di = 0.2; \cf4 //Digital Interval\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf3 \
+\cf4 //set address for OSC communication\cf3 \
+\pard\pardeftab720\ql\qnatural
+
+\f2\fs26 \cf3 n = \cf2 NetAddr\cf3 (\cf5 "127.0.0.1"\cf3 , 57100);
+\f0\fs28 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf3 \
+\pard\pardeftab720\ql\qnatural
+\cf4 // 
+\f1 \'c7\'d1
+\f0  
+\f1 \'b9\'f8
+\f0  
+\f1 \'bd\'c7\'c7\'e0\'b5\'c7\'b8\'e9
+\f0  
+\f1 \'b1\'d7
+\f0  
+\f1 \'b5\'da\'c0\'c7
+\f0  
+\f1 \'ba\'af\'c8\'ad\'b4\'c2
+\f0  
+\f1 \'be\'ee\'c2\'ee\'b5\'c7\'b5\'b5
+\f0  
+\f1 \'bb\'f3\'b0\'fc\'be\'f8\'b5\'b5\'b7\'cf \'bb\'f3\'c5\'c2 \'c3\'bc\'c5\'a9
+\f0 \cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf3 ~key1_check = \cf2 nil\cf3 ;\
+~key2_check = \cf2 nil\cf3 ;\
+~key3_check = \cf2 nil\cf3 ;\
+~key4_check = \cf2 nil\cf3 ;\
+~key5_check = \cf2 nil\cf3 ;\
+~key6_check = \cf2 nil\cf3 ;\
+~key7_check = \cf2 nil\cf3 ;\
+~key8_check = \cf2 nil\cf3 ;\
+\
+\cf4 //<Group for key synths>\cf3 \
+\
+~key8 = \cf2 Group\cf3 .
+\f1 head
+\f0 (0);\
+~key7 = \cf2 Group\cf3 .
+\f1 head
+\f0 (0);\
+~key6 = \cf2 Group\cf3 .
+\f1 head
+\f0 (0);\
+~key5 = \cf2 Group\cf3 .
+\f1 head
+\f0 (0);\
+~key4 = \cf2 Group\cf3 .
+\f1 head
+\f0 (0);\
+~key3 = \cf2 Group\cf3 .
+\f1 head
+\f0 (0);\
+~key2 = \cf2 Group\cf3 .
+\f1 head
+\f0 (0);\
+~key1 = \cf2 Group\cf3 .
+\f1 head
+\f0 (0);\
+~sou_in = \cf2 Group\cf3 .
+\f1 head
+\f0 (0);\
+~sou_out = \cf2 Group\cf3 .after(~key8);\
+\
+\cf4 //
+\f1 rev and comb filter
+\f0 \cf3 \
+~rv1 = \cf2 Synth\cf3 .tail(1, \cf6 \\rev1\cf3 );\
+~rv2 = \cf2 Synth\cf3 .tail(1, \cf6 \\rev2\cf3 );\
+~rv3 = \cf2 Synth\cf3 .tail(~key3, \cf6 \\rev3\cf3 );\
+~rv4 = \cf2 Synth\cf3 .tail(~key4, \cf6 \\rev4\cf3 );\
+~rv5 = \cf2 Synth\cf3 .tail(~key5, \cf6 \\rev5\cf3 );\
+~rv6 = \cf2 Synth\cf3 .tail(~key6, \cf6 \\rev6\cf3 );\
+\cf4 //~rv7 = Synth.tail(~key7, \\rev7);\cf3 \
+\cf4 //~rv72 = Synth.tail(~key7, \\rev72);\cf3 \
+\cf4 //~rv8 = Synth.tail(~key8, \\rev8);\cf3 \
+\cf4 //~rv82 = Synth.tail(~key8, \\rev82);\cf3 \
+				\
+\cf4 //<key sound synths>\cf3 \
+~ms = \cf2 Synth\cf3 .tail(1, \cf6 \\masterout\cf3 );\
+\pard\pardeftab720\ql\qnatural
+\cf3 \
+\
+\cf4 //<main loop>\cf3 \
+\cf4 //1. Digital\cf3 \
+fork\{\
+	\cf2 inf\cf3 .do\{\
+		\
+		if( ~d2 == 0, \{if (~key1_check.isNil,\
+			\{\
+			~a_loop.stop; \cf4 //analog loop stop\cf3 \
+			\
+			\cf5 "
+\f1 key1 on"\cf3 .postln;
+\f0 \
+					~key1_check = 1;\
+					\
+			
+\f2\fs26 c=\cf2 Pbind\cf3 (	*[	instrument: \cf6 \\key1\cf3 ,\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf3 						freq:					\cf2 Pseq\cf3 ([280, 590]*9, \cf2 inf\cf3 ), \cf4 //
+\f1 \'c0\'bd\'b3\'f4\'c0\'cc 
+\f2 \cf3 \
+						dur:					\cf2 Pseq\cf3 ([2,2,1,5,4,0.3,0.9,0.5, 4, 2], \cf2 inf\cf3 ), \cf4 //
+\f1 \'b1\'e6\'c0\'cc
+\f2 \cf3 \
+						po:						\cf2 Pseq\cf3 ([2], \cf2 inf\cf3 ),\
+						po1:					\cf2 Pseq\cf3 ([0.5], \cf2 inf\cf3 ),\
+						beat:					\cf2 Pseq\cf3 ([2,1,5,8,1,1,1,2], \cf2 inf\cf3 ),\
+						rtime:					\cf2 Pseq\cf3 ([2,0.1,0.5,3,1,2,0.3], \cf2 inf\cf3 )			\
+						]\
+					).play;
+\f0\fs28 \
+\pard\pardeftab720\ql\qnatural
+\cf3 					\
+					n.sendMsg(\cf5 "/getdark"\cf3 ,150);\
+					\
+						\}, \{\cf2 nil\cf3 \})\}); \cf4 //key1\cf3 \
+\pard\pardeftab560\ql\qnatural
+\cf3 				\
+\pard\pardeftab720\ql\qnatural
+\cf3 		if( ~d3 == 0, \{if (~key2_check.isNil,\
+			\{\cf5 "
+\f1 key2 on"\cf3 .postln;
+\f0 \
+					~key2_check = 1;\
+					\
+			
+\f2\fs26 d=\cf2 Pbind\cf3 (	*[	instrument: 		\cf6 \\key2\cf3 ,\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf3 						freq:					\cf2 Pseq\cf3 ([280, 590, 400]*3, \cf2 inf\cf3 ),\
+						dur:					\cf2 Pseq\cf3 ([2,2,1,5,4,0.3,0.4,0.5, 4, 2]/0.5, \cf2 inf\cf3 ),\
+						po:						\cf2 Pseq\cf3 ([2], \cf2 inf\cf3 ),\
+						po1:					\cf2 Pseq\cf3 ([0.5], \cf2 inf\cf3 ),\
+						beat:					\cf2 Pseq\cf3 ([2,1,5,8,1,1,1,2], \cf2 inf\cf3 ),\
+						rtime:					\cf2 Pseq\cf3 ([2,0.1,0.5,3,1,2,0.3]*3, \cf2 inf\cf3 )			\
+						]\
+					).play;
+\f0\fs28 \
+\pard\pardeftab720\ql\qnatural
+\cf3 					\
+					n.sendMsg(\cf5 "/getdark"\cf3 , 130);					\
+					\
+						\}, \{\cf2 nil\cf3 \})\}); \cf4 //key2\cf3 \
+\pard\pardeftab560\ql\qnatural
+\cf3 				\
+\pard\pardeftab720\ql\qnatural
+\cf3 		if( ~d4 == 0, \{if (~key3_check.isNil,\
+			\{\cf5 "
+\f1 key3 on"\cf3 .postln;
+\f0 \
+					~key3_check = 1;\
+					\
+					~os3 = \cf2 Synth\cf3 .head(~key3, \cf6 \\key3\cf3 ,  [\cf6 \\trig\cf3 , 1, \cf6 \\gs\cf3 , 0.01]);\
+					\
+					n.sendMsg(\cf5 "/getdark"\cf3 , 110);					\
+					\
+						\}, \{\cf2 nil\cf3 \})\}); \cf4 //key3\cf3 \
+						\
+		if( ~d5 == 0, \{if (~key4_check.isNil,\
+			\{\cf5 "
+\f1 key4 on"\cf3 .postln;
+\f0 \
+					~key4_check = 1;\
+					\
+					~os4 = \cf2 Synth\cf3 .head(~key4, \cf6 \\key4\cf3 );\
+					\
+					n.sendMsg(\cf5 "/getdark"\cf3 , 90);					\
+					\
+						\}, \{\cf2 nil\cf3 \})\}); \cf4 //key4\cf3 \
+						\
+		if( ~d6 == 0, \{if (~key5_check.isNil,\
+			\{\cf5 "
+\f1 key5 on"\cf3 .postln;
+\f0 \
+					~key5_check = 1;\
+\
+					~os5 = \cf2 Synth\cf3 .head(~key5, \cf6 \\key5
+\f2\fs26 \cf3 , [\cf6 \\freq\cf3 , 100, \cf6 \\lt\cf3 , 250, \cf6 \\ht\cf3 , 2, \cf6 \\wi\cf3 , 0.2, \cf6 \\tone\cf3 , 400, \cf6 \\ft\cf3 , 360]);
+\f0\fs28 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf3 \
+\pard\pardeftab720\ql\qnatural
+\cf3 					n.sendMsg(\cf5 "/getdark"\cf3 , 70);					\
+					\
+						\}, \{\cf2 nil\cf3 \})\}); \cf4 //key5\cf3 \
+						\
+		if( ~d7 == 0, \{if (~key6_check.isNil,\
+			\{\cf5 "
+\f1 key6 on"\cf3 .postln;
+\f0 \
+					~key6_check = 1;\
+					\
+					~os6 = \cf2 Synth\cf3 .head(~key6, \cf6 \\key6\cf3 );\
+					\
+					n.sendMsg(\cf5 "/getdark"\cf3 , 50);					\
+					\
+						\}, \{\cf2 nil\cf3 \})\}); \cf4 //key6\cf3 \
+						\
+		if( ~d8 == 0, \{if (~key7_check.isNil,\
+			\{\cf5 "
+\f1 key7 on"\cf3 .postln;
+\f0 \
+					~key7_check = 1;\
+					\
+					~os7 = \cf2 Synth\cf3 .head(~key7, \cf6 \\key7
+\f2\fs26 \cf3 );\
+					~os72 = \cf2 Synth\cf3 .head(~key7, \cf6 \\key72\cf3 );
+\f0\fs28 \
+					\
+					n.sendMsg(\cf5 "/getdark"\cf3 , 30);					\
+					\
+						\}, \{\cf2 nil\cf3 \})\}); \cf4 //key7\cf3 \
+						\
+		if( ~d9 == 0, \{if (~key8_check.isNil,\
+			\{\cf5 "
+\f1 key8 on"\cf3 .postln;
+\f0 \
+					~key8_check = 1;\
+\
+					n.sendMsg(\cf5 "/getdark"\cf3 , 10);\
+\pard\pardeftab720\ql\qnatural
+
+\f2\fs26 \cf4 //pattern fadeout	key1				\cf3 \
+				c.stream = \cf2 Pbind\cf3 (	*[	instrument: \cf6 \\key5\cf3 ,\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf3 						freq:					\cf2 Pseq\cf3 ([280, 590]*9, \cf2 inf\cf3 ), \cf4 //
+\f1 \'c0\'bd\'b3\'f4\'c0\'cc 
+\f2 \cf3 \
+						dur:					\cf2 Pseq\cf3 ([2,2,1,5,4,0.3,0.9,0.5, 4, 2], \cf2 inf\cf3 ), \cf4 //
+\f1 \'b1\'e6\'c0\'cc
+\f2 \cf3 \
+						po:						\cf2 Pseq\cf3 ([2], \cf2 inf\cf3 ),\
+						po1:					\cf2 Pseq\cf3 ([0.5], \cf2 inf\cf3 ),\
+						beat:					\cf2 Pseq\cf3 ([2,1,5,8,1,1,1,2], \cf2 inf\cf3 ),\
+						rtime:					\cf2 Pseq\cf3 ([2,0.1,0.5,3,1,2,0.3], \cf2 inf\cf3 ),\
+						gate: 					\cf2 Pseq\cf3 ([0], 1)			\
+						]\
+					).asStream;\
+					\
+\pard\pardeftab720\ql\qnatural
+\cf4 //pattern fadeout	key2					\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf3 					
+\f0\fs28 	
+\f2\fs26 d.stream=\cf2 Pbind\cf3 (	*[	instrument: 		\cf6 \\key2\cf3 ,\
+						freq:					\cf2 Pseq\cf3 ([280, 590, 400]*3, \cf2 inf\cf3 ),\
+						dur:					\cf2 Pseq\cf3 ([2,2,1,5,4,0.3,0.4,0.5, 4, 2]/0.5, \cf2 inf\cf3 ),\
+						po:						\cf2 Pseq\cf3 ([2], \cf2 inf\cf3 ),\
+						po1:					\cf2 Pseq\cf3 ([0.5], \cf2 inf\cf3 ),\
+						beat:					\cf2 Pseq\cf3 ([2,1,5,8,1,1,1,2], \cf2 inf\cf3 ),\
+						rtime:					\cf2 Pseq\cf3 ([2,0.1,0.5,3,1,2,0.3]*3, \cf2 inf\cf3 ),\
+						gate:					\cf2 Pseq\cf3 ([0], 1)			\
+						]\
+					).asStream;\
+\pard\pardeftab720\ql\qnatural
+\cf3 \
+					~os3.set(\cf6 \\gate\cf3 , 0);\
+					~os4.set(\cf6 \\gate\cf3 , 0);\
+					~os5.set(\cf6 \\gate\cf3 , 0);\
+					~os6.set(\cf6 \\gate\cf3 , 0);\
+					~os7.set(\cf6 \\gate\cf3 , 0);\
+					~os72.set(\cf6 \\gate\cf3 , 0);																							\
+\
+					\cf2 SystemClock\cf3 .sched(2, \{\
+						n.sendMsg(\cf5 "/second"\cf3 , 1);\
+						
+\f0\fs28 ~os8 = \cf2 Synth\cf3 .head(~key8, \cf6 \\key8\cf3 );~os82 = \cf2 Synth\cf3 .head(~key8, \cf6 \\key82\cf3 );
+\f2\fs26 \});\
+						\
+\cf4 //					~kms.set(\\gate, 0); //master fade out;
+\f0\fs28 					\cf3 \
+\
+					~a_loop.reset; \cf4 //analog loop run again\cf3 \
+					~a_loop.play;\
+										\
+						\}, \{\cf2 nil\cf3 \})\}); \cf4 //key8			\cf3 \
+\pard\pardeftab560\ql\qnatural
+\cf3 				\
+				~di.wait;\
+\pard\pardeftab720\ql\qnatural
+\cf3 			[~d2, ~d3, ~d4, ~d5, ~d6, ~d7, ~d8, ~d9].postln;			\
+\pard\pardeftab560\ql\qnatural
+\cf3 				\}\
+				\};\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf3 \
+\cf4 //2. Analog\cf3 \
+\
+~l1 = 0.3;\
+~l2 = 0.3;\
+~l3 = 0.3;\
+\
+~acheck = \cf2 nil\cf3 ;\
+~bcheck = \cf2 nil\cf3 ;\
+~ccheck = \cf2 nil\cf3 ;\
+~dcheck = \cf2 nil\cf3 ;\
+~echeck = \cf2 nil\cf3 ;\
+~fcheck = \cf2 nil\cf3 ;\
+\
+~timecheck = 0;\
+~sec_timecheck = 0;\
+~thr_timecheck = 0;\
+\
+~a_loop = fork\{\
+			\cf2 inf\cf3 .do\{\
+			\
+~did.postln;\
+\
+			\
+\cf4 //start sound\cf3 \
+			\
+			\
+			if( ~e < 350, \{if (~echeck.isNil, \{~a1s = \cf2 Synth\cf3 (\cf6 \\cubic\cf3 ); ~echeck = 1;\})\}); \cf4 //on synth\cf3 \
+\
+						\
+			if( ~d < 350, \{ if (~dcheck.isNil, \{ if (~thr_timecheck == 20, \{\
+									fork\{\
+											1.do\{\
+													~a1s.free;											\
+													~dcheck = 1;\
+													~did = 1;													\
+													~a2s = \cf2 Synth\cf3 (\cf6 \\stopmoment\cf3 );\
+													\cf5 "stop moment"\cf3 .postln;\
+												\}\
+										\}\
+									\})\})\});\
+\
+									\
+\cf4 //timecheck - for cantcontrol and objective view\cf3 \
+\
+			if(~c < 350, \{ if (~d < 350, \{\
+									fork\{\
+											1.do\{	\
+													~timecheck = ~timecheck + 1;\
+													[\cf5 "TIMECHECK"\cf3 +~timecheck].postln;\
+													0.1.wait;\
+													if(~c < 350, \{ if ( ~d < 350, \{\cf2 nil\cf3 \}, \{~timecheck = 0;\})\}, \{~timecheck = 0;\});\
+												\}\
+										\}\
+									\})\});\
+									\
+\cf4 //sec_timecheck2 - for normal view\cf3 \
+\
+			if(~e < 350, \{ if (~f < 350, \{\
+									fork\{\
+											1.do\{	\
+													~sec_timecheck = ~sec_timecheck + 1;\
+													[\cf5 "TIMECHECK2"\cf3 +~sec_timecheck].postln;\
+													0.1.wait;\
+													if(~e < 350, \{ if ( ~f < 350, \{\cf2 nil\cf3 \}, \{~sec_timecheck = 0;\})\}, \{~sec_timecheck = 0;\});\
+												\}\
+										\}\
+									\})\});									\
+									\
+\cf4 //thr_timecheck3 - synth change timing check\cf3 \
+\
+			if(~d < 350, \{\
+									fork\{\
+											1.do\{	\
+													~thr_timecheck = ~thr_timecheck + 1;\
+													[\cf5 "TIME_3"\cf3 +~thr_timecheck].postln;\
+													0.1.wait;\
+													if(~d < 350, \{\cf2 nil\cf3 \}, \{~thr_timecheck = 0\});\
+												\}\
+										\}\
+									\});											\
+																	\
+\cf4 //if timecheck == 20(for 2 sec), objective view\cf3 \
+\
+			if ( ~timecheck == 20, \{ if ( ~fcheck.isNil, \{\
+												fork\{\
+														1.do\{\
+																~a2s.release(3);\
+																~fcheck = 1;\
+																\cf5 "restart the moment"\cf3 .postln;\
+																n.sendMsg(\cf5 "/pdan"\cf3 , 1);\
+																~a3s = \cf2 Synth\cf3 (\cf6 \\cantcontrol\cf3 );\
+															\}\
+													\}\
+												\})\});												\
+\cf4 //if timecheck2 == 20(for 2 sec), return normal view\cf3 \
+\
+			if ( ~sec_timecheck == 20, \{ if ( ~fcheck == 1, \{	n.sendMsg(\cf5 "/pdan"\cf3 , 0);\
+														~oslast = \cf2 Synth\cf3 .head(~key7, \cf6 \\key7\cf3 );~oslastt = \cf2 Synth\cf3 .head(~key7, \cf6 \\key72\cf3 ) \})\});																							\
+			\
+			\
+\cf4 //sensor 1 - pany\cf3 \
+			if (~echeck == 1, \{\
+			~a1s.set(\cf6 \\arga\cf3 , 		~a.linlin(330.0, 500.0, -1.0, 1.0));	\});\
+							\
+			if (~dcheck == 1, \{~echeck = 2;									\
+			~a2s.set(\cf6 \\arga\cf3 , 		~a.linlin(330.0, 500.0, -1.0, 1.0));	\});\
+			\
+			if (~fcheck == 1, \{	~dcheck = 2;								\
+			~a3s.set(\cf6 \\arga\cf3 , 		~a.linlin(330.0, 500.0, 1, 3));\});\
+			\
+\
+\cf4 //sensor 2 -panx\cf3 \
+			if (~echeck == 1, \{			\
+			~a1s.set(\cf6 \\argb\cf3 ,		~b.linlin(330.0, 520.0, -1.0, 1.0));	\});\
+							\
+			if (~dcheck == 1, \{~echeck = 2;	\
+			~a2s.set(\cf6 \\argb\cf3 , 		~b.linlin(330.0, 520.0, -1.0, 1.0));	\});\
+							\
+			if (~fcheck == 1, \{	~dcheck = 2;								\
+			~a3s.set(\cf6 \\argb\cf3 , 		~b.linlin(330.0, 520.0, -1, 1));\});					\
+\
+\cf4 //sensor 3 - rq, damp\cf3 \
+			if (~echeck == 1, \{			\
+			~a1s.set(\cf6 \\argc\cf3 , 		~c.linlin(200.0, 530.0, 0.001, 0.9));	\});\
+							\
+			if (~dcheck == 1, \{~echeck = 2;																	\
+			~a2s.set(\cf6 \\argc\cf3 , 		~c.linlin(200.0, 530.0, 0.01, 0.9));	\});\
+							\
+			if (~fcheck == 1, \{	~dcheck = 2;								\
+			~a3s.set(\cf6 \\argc\cf3 , 		~c.linlin(200.0, 530.0, 0.1, 1));\});\
+									\
+\cf4 //sensor 4 - mix			\cf3 \
+			if (~echeck == 1, \{\
+			~a1s.set(\cf6 \\argd\cf3 ,		~d.linlin(300.0, 650.0, 0.01, 0.99));	\});\
+							\
+			if (~dcheck == 1, \{~echeck = 2;																\
+			~a2s.set(\cf6 \\argd\cf3 ,		~d.linlin(300.0, 650.0, 150, 450));\
+			\
+								\
+								if( ~did == 1, \{\
+								n.sendMsg(\cf5 "/blink"\cf3 , ~d.linlin(200.0, 480.0, 6, 12)); ~did = 0;\});\});\
+							\
+			if (~fcheck == 1, \{	~dcheck = 2;																	\
+			~a3s.set(\cf6 \\argd\cf3 ,		~d.linlin(200.0, 530.0, 0.1, 1));\});											\
+\
+\cf4 //sensor 5 - amp\cf3 \
+			if (~echeck == 1, \{\
+			~a1s.set(\cf6 \\arge\cf3 , 		~e.linlin(300.0, 500.0, 0.01, 1.0));\
+								
+\f1 n.sendMsg(\cf5 "/getdark"\cf3 ,  
+\f0 ~e.linlin(300.0, 500.0, 35, 256)
+\f1 )
+\f0 	\});\
+\
+			if (~dcheck == 1, \{~echeck = 2;																\
+			~a2s.set(\cf6 \\arge\cf3 , 		~e.linlin(200.0, 420.0, 0.01, 0.9));	\});\
+			\
+			if (~fcheck == 1, \{	~dcheck = 2;																\
+			~a3s.set(\cf6 \\arge\cf3 , 		~e.linlin(200.0, 520.0, 150, 550));\});												\
+			\
+\
+\cf4 //sensor 6 - impulsefreq\cf3 \
+			if (~echeck == 1, \{			\
+			~a1s.set(\cf6 \\argf\cf3 , 		~f.linlin(300.0, 500.0, 0.01, 1));	\
+								
+\f1 n.sendMsg(\cf5 "/getdark"\cf3 ,  
+\f0 ~f.linlin(300.0, 500.0, 35, 256)
+\f1 )
+\f0 	\});\
+							\
+			if (~dcheck == 1, \{ ~echeck = 2;																\
+			~a2s.set(\cf6 \\argf\cf3 , 		~f.linlin(300.0, 550.0, 0.5, 12.0));		\});\
+			\
+			if (~fcheck == 1, \{	 ~dcheck = 2;		\
+			~a3s.set(\cf6 \\argf\cf3 , 		~f.linlin(300.0, 550.0, -1, 1)); \});\
+			\
+			\
+			[~a, ~b, ~c, ~d, ~e, ~f].postln;				\
+			~l2.wait; \cf4 //analog read interval\cf3 \
+					\};\
+		\};\
+\pard\pardeftab720\ql\qnatural
+\cf3 	);\
+\
+\
+\
+}

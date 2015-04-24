@@ -1,0 +1,393 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+{\fonttbl\f0\fnil\fcharset0 Monaco;\f1\fnil\fcharset129 AppleGothic;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\fs26 \cf2 //Source\cf0 \
+\
+\cf3 Buffer\cf0 .freeAll;\
+~bufsigi = \cf3 Buffer\cf0 .read(s, \cf4 "/Users/acriskim/Desktop/tear.wav"\cf0 ); \cf2 //for key7\cf0 \
+~bufsigii = \cf3 Buffer\cf0 .read(s, \cf4 "/Users/acriskim/Desktop/sawend.wav"\cf0 ); \cf2 //for key8\cf0 \
+\
+~bufsigi.query;\
+~bufsigii.query;\
+\
+~bufsigi.play;\
+~bufsigii.play;\
+\
+(
+\fs28 \cf2 //key1\cf0 \
+~s1 = ~l1 =\cf3 SynthDef\cf0 (\cf5 \\key1\cf0 ,\
+\
+		\{\
+		\cf3 arg\cf0  freq=100, eamp = 1, po=1.5, po1 = 1.1, beat=1, rtime = 0.1, xpos = 0, ypos = 0;\
+		\cf3 var\cf0  amps, rts, sig, outsig, env;\
+		\
+		amps = \cf3 Control\cf0 .names(\cf5 \\vol\cf0 ).kr([0.03, 0.03, 0.03]);\
+		rts = \cf3 Control\cf0 .names(\cf5 \\ring\cf0 ).kr([1, 10, 2]);\
+		env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.1, rtime), doneAction: 2);\
+		sig = \cf3 DynKlank\cf0 .ar(`[[freq, freq*(po), freq*(po1)], amps, rts], \cf3 LFNoise0\cf0 .ar(beat).range(0,1) );\
+		outsig = \cf3 Pan4\cf0 .ar(sig * env, \cf3 LFNoise0\cf0 .kr(5).range(-1,1), \cf3 LFNoise0\cf0 .kr(5).range(-1,1));\
+\
+		\cf3 Out\cf0 .ar(20, outsig * eamp); \cf2 //no rev, direct to 0 ~ 4\cf0 \
+		\}\
+	);\
+\
+\cf2 //key2\cf0 \
+~s2 = ~l2 =\cf3 SynthDef\cf0 (\cf5 \\key2\cf0 ,\
+\
+		\{\
+		\cf3 arg\cf0  freq=100, eamp = 1, po=1.5, po1 = 1.1, beat=1, rtime = 0.1, xpos = 0, ypos = 0;\
+		\cf3 var\cf0  amps, rts, sig, outsig, env;\
+		\
+		amps = \cf3 Control\cf0 .names(\cf5 \\vol\cf0 ).kr([0.03, 0.03, 0.03]);\
+		rts = \cf3 Control\cf0 .names(\cf5 \\ring\cf0 ).kr([1, 10, 2]);\
+		env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.1, rtime), doneAction: 2);\
+		sig = \cf3 DynKlank\cf0 .ar(`[[freq, freq*(po), freq*(po1)], amps, rts], \cf3 LFNoise0\cf0 .ar(beat).range(0,1) );\
+		outsig = \cf3 Pan4\cf0 .ar(sig * env, \cf3 LFNoise0\cf0 .kr(5).range(-1,1), \cf3 LFNoise0\cf0 .kr(5).range(-1,1));\
+\
+		\cf3 Out\cf0 .ar(24, outsig * eamp); \cf2 //no rev, direct to 0 ~ 4\cf0 \
+		\}\
+	);\
+\
+\cf2 //key3\cf0 \
+~s3 = ~l3 = \cf3 SynthDef\cf0 (\cf5 \\key3\cf0 ,\
+		\{\
+		\cf3 arg\cf0  amp = 0.4, gate = 1, trig = 100, gs = 0.01, infr = 203, xpos = 0, ypos = 0;\
+		\cf3 var\cf0  sig, env, outsig, ran;\
+		\
+		ran = \cf3 LFNoise0\cf0 .kr(3).range(0, 2);\
+		sig = \cf3 SinGrain\cf0 .ar(\cf3 Impulse\cf0 .kr(trig + ran), gs, infr);\
+		env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .asr(4, 0.8, 8), gate, doneAction: 2);\
+		outsig = \cf3 Pan4\cf0 .ar(sig * env, xpos, ypos);\
+		\cf3 Out\cf0 .ar(28, outsig);\
+		\}\
+	);\
+\
+\cf2 //key4\cf0 \
+~s4 = ~l4 = \cf3 SynthDef\cf0 (\cf5 \\key4\cf0 ,\
+		\{\
+		\cf3 arg\cf0  pitch = 350, amp = 0.3, rq = 0.08, gate = 1, chf = 2;\
+		\cf3 var\cf0  sig, env, filsig, comsig, outsig, freq;\
+		freq = \cf3 LFNoise0\cf0 .kr(\cf3 LFNoise0\cf0 .kr(chf).range(2, 10)).range(200, 390);\
+		sig = \cf3 Saw\cf0 .ar(pitch);\
+		filsig = \cf3 RLPF\cf0 .ar(sig, freq, rq);\
+		comsig = \cf3 Compander\cf0 .ar(filsig, filsig, 0.8, 1, 1/3);\
+		env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .asr(20, 0.7, 8), gate, doneAction: 2);\
+		outsig = \cf3 Pan4\cf0 .ar(comsig * env, 0, 0, amp);\
+		\cf3 Out\cf0 .ar(32, outsig)\
+		\}\
+	);\
+\
+\
+\cf2 //
+\f1 key5\cf0 \
+
+\f0 ~s5 = ~l5 = \cf3 SynthDef\cf0 (\cf5 \\key5\cf0 ,\
+		\{\
+		\cf3 arg\cf0  freq = 100, amp = 0.8, ht = 8, lt = 4, wi = 0.5, gate = 1, tone = 4, ft = 25, xpos = 0, ypos = 0;\
+		\cf3 var\cf0  sig1, sig2, sig3, sig4, outsig, env, tenv;\
+		\
+		env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .adsr(0.1, 0.05, 1, 0.3), \cf3 LFPulse\cf0 .kr(2, 0.5));\
+		tenv = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .asr(4, 1, 8), gate, doneAction: 2);\
+		sig1 = \cf3 Saw\cf0 .ar(\cf3 LFPulse\cf0 .ar(freq, 0, wi).range(lt, 
+\f1 ht
+\f0 ), mul: amp);\
+		sig2 = \cf3 Blip\cf0 .ar(ft, tone, 
+\f1 amp
+\f0 );\
+		sig3 = sig1 * sig2 * env;\
+		sig4 = \cf3 Compander\cf0 .ar(sig3, sig3, 0.6, 1, 1, 0.00001, 0.01);\
+		\
+		outsig = \cf3 Pan4\cf0 .ar(sig4 * tenv, xpos, \cf3 LFPulse\cf0 .kr(1/2).range(-1, 1));\
+		\cf3 Out\cf0 .ar(36, outsig)\
+		\};\
+	);\
+	\
+\cf2 //x.set(\\freq, 100, \\lt, 250, \\ht, 2, \\wi, 0.2, \\tone, 400, \\ft, 360);\cf0 \
+\
+\
+\cf2 //key 6	\cf0 \
+~s6 = ~l6 = \cf3 SynthDef\cf0 (\cf5 \\key6\cf0 ,\
+		\{\
+		\cf3 arg\cf0  pitch = 150, amp = 0.3, rq = 0.08, gate = 1;\
+		\cf3 var\cf0  sig, env, tenv, comsig, outsig, freq;\
+		sig = \cf3 SinOsc\cf0 .ar(1223.65);\
+		comsig = \cf3 Compander\cf0 .ar(sig, sig, 0.6, 1, 1/2);\
+		env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.0001, 0.0009), \cf3 Dust\cf0 .kr(\cf3 Stepper\cf0 .kr(\cf3 Impulse\cf0 .kr(0), 0, 1, 420, [1, 3, 2, 1/2])));\
+		tenv = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .asr(1, 0.8, 8), gate, doneAction: 2);\
+		outsig = \cf3 Pan4\cf0 .ar(comsig * env * tenv, 0, 0, amp);\
+		\cf3 Out\cf0 .ar(40, outsig)\
+		\}\
+	);\
+\
+\cf2 //key 7(front)\cf0 \
+~s7 = ~l7 = \cf3 SynthDef\cf0 (\cf5 \\key7\cf0 , \cf2 //2ch sound file\cf0 \
+		\{\
+		\cf3 arg\cf0  xpos = 0, ypos = 0, gate = 1, fpos = 0;\
+		\cf3 var\cf0  leng, sig, env, outsig;\
+		\
+		leng = ~bufsigi.numFrames/44100;\
+				\
+		sig = \cf3 PlayBuf\cf0 .ar(2, ~bufsigi, 1, loop: 1);\
+		env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .asr(2, 0.5, 5), gate, doneAction: 2);\
+		outsig = \cf3 Pan2\cf0 .ar(sig * env, fpos);\
+		\cf3 Out\cf0 .ar(0, outsig)\
+		\};\
+	);\
+\
+\cf2 //key 7 -2(rear)\cf0 \
+~s72 = ~l72 = \cf3 SynthDef\cf0 (\cf5 \\key72\cf0 , \cf2 //2ch sound file\cf0 \
+		\{\
+		\cf3 arg\cf0  xpos = 0, ypos = 0, gate = 1, rpos = 0;\
+		\cf3 var\cf0  leng, sig, env, outsig;\
+		\
+		leng = ~bufsigi.numFrames/44100;\
+				\
+		sig = \cf3 PlayBuf\cf0 .ar(2, ~bufsigi, 1, startPos: 44100*(3/2), loop: 1);\
+		env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .asr(2, 0.5, 5), gate, doneAction: 2);\
+		outsig = \cf3 Pan2\cf0 .ar(sig * env, rpos);\
+		\cf3 Out\cf0 .ar(2, outsig)\
+		\};\
+	);\
+\
+\cf2 //key 8 - 1(front)\cf0 \
+~s8 = ~l8 = \cf3 SynthDef\cf0 (\cf5 \\key8\cf0 , \cf2 //2ch sound file\cf0 \
+		\{\
+		\cf3 arg\cf0  xpos = 0, ypos = 0, gate = 1;\
+		\cf3 var\cf0  sig, outsig, leng, env;\
+		\
+		leng = ~bufsigii.numFrames/44100;\
+		\
+		sig = \cf3 PlayBuf\cf0 .ar(2, ~bufsigii, 1, loop: 0, doneAction: 2);\
+		env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .asr(0.5, 0.5, 5), gate);\
+		outsig = \cf3 Pan2\cf0 .ar(sig * env, \cf3 SinOsc\cf0 .kr(1/leng));\
+		\cf3 Out\cf0 .ar(0, outsig)\
+		\};\
+	);\
+\
+\cf2 //key 8 - 2(rear)\cf0 \
+~s82 = ~l82 = \cf3 SynthDef\cf0 (\cf5 \\key82\cf0 , \cf2 //2ch sound file\cf0 \
+		\{\
+		\cf3 arg\cf0  xpos = 0, ypos = 0, gate = 1;\
+		\cf3 var\cf0  sig, outsig, leng, env;\
+		\
+		leng = ~bufsigii.numFrames/44100;\
+		sig = \cf3 PlayBuf\cf0 .ar(2, ~bufsigii, 1, loop: 0, doneAction: 2);\
+		env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .asr(0.5, 0.5, 5), gate);		\
+		outsig = \cf3 Pan2\cf0 .ar(sig * env, \cf3 SinOsc\cf0 .kr(1/leng, pi/2));\
+		\cf3 Out\cf0 .ar(2, outsig)\
+		\};\
+	);\
+\
+\cf2 //For analog\cf0 \
+~an1 = \cf3 SynthDef\cf0 (\cf5 \\cubic\cf0 ,\
+			\{\
+			\cf3 arg\cf0  arga = 0.5, argb = 300, argc = 0.01, argd = 0.8, arge = 0, argf = 0, gate = 1, outbus = 0;\
+			\cf3 var\cf0  sig, env, fil, outsig, rev;\
+			\
+			sig = \cf3 PinkNoise\cf0 .ar(mul: arge);\
+			fil = \cf3 RLPF\cf0 .ar(sig, argd * 10000, argc);\
+			rev = \cf3 FreeVerb\cf0 .ar(fil, argd, argc, 0.5, arge);\
+			env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .asr(1.2, 0.8, 2), gate, doneAction: 2);\
+			\
+			outsig = \cf3 Pan4\cf0 .ar(rev * env, argb, arga, (argf * 2));\
+			\cf3 Out\cf0 .ar(outbus, outsig);\
+			\}, [0.5, 0.5, 0.5, 0.5, 0.5, 0.5];\
+		);\
+\
+~an2 = \cf3 SynthDef\cf0 (\cf5 \\stopmoment\cf0 ,\
+			\{\
+			\cf3 arg\cf0  arga = 0, argb = 0, argc = 5, argd = 650, arge = 0.5, argf = 0.5, gate = 1, outbus = 0;\
+			\cf3 var\cf0  sig, env, fil, outsig, tenv;\
+			\
+			sig = \cf3 Blip\cf0 .ar(argd, \cf3 LFNoise1\cf0 .kr(1).range(3, 12), 
+\f1 arge
+\f0 );\
+			fil = \cf3 FreeVerb\cf0 .ar(sig, argc, argf);\
+			env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(2.6, 0.7), \cf3 Impulse\cf0 .kr(1));\
+			tenv = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .asr(25, 0.5, 5), gate, doneAction: 2);\
+			outsig = \cf3 Pan4\cf0 .ar((fil * env * tenv), 0, 0, 0.5);\
+			\cf3 Out\cf0 .ar(0, outsig);\
+			\}, [0, 0, 0.4, 0, 0, 0.4];\
+	);\
+\
+~an3 = \cf3 SynthDef\cf0 (\cf5 \\cantcontrol\cf0 ,\
+			\{\
+			\cf3 arg\cf0  arga = 1, argb = 0, argc = 1, argd = 0.5, arge = 50, argf = 0, gate = 1;\
+			\cf3 var\cf0  sig, fil, env, tenv, outsig, compsig, envsig, revsig;\
+			\
+			sig = \cf3 WhiteNoise\cf0 .ar(argc);\
+			fil = \cf3 RLPF\cf0 .ar(sig, arge);\
+			env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.1, 0.3), \cf3 Impulse\cf0 .kr(arga));\
+			tenv = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .asr(0.5, 1, 10), gate, doneAction: 2);\
+			envsig = fil * env;\
+			revsig = \cf3 FreeVerb\cf0 .ar(envsig, argd, 0.9, 0.2);\
+			compsig = \cf3 Compander\cf0 .ar(revsig, revsig, 0.9, 1, 1/3, 0.001, 0.01);\
+			outsig = \cf3 Pan4\cf0 .ar(compsig * tenv, argb, argf);\
+			\cf3 Out\cf0 .ar(0, outsig);\
+			\}, [0, 0, 0, 0.3]\
+		);\
+\
+	\
+\cf2 //Filter--------------------------------------------\cf0 \
+\
+\cf2 //for key1\cf0 \
+~r1 = ~lr1 = \cf3 SynthDef\cf0 (\cf5 \\rev1\cf0 ,\
+		\{\
+		\cf3 arg\cf0  mix=0.5, room=0.5, damp=0.5, ob;\
+		\cf3 var\cf0  sig, fil, outsig, env;\
+		sig = \cf3 In\cf0 .ar(20, 4);\
+		fil = \cf3 FreeVerb\cf0 .ar(sig, mix, room, damp);\
+		\cf3 Out\cf0 .ar(100, fil)\
+		\}\
+	);\
+	\
+\cf2 //for key2	\cf0 \
+~r2 = ~lr2 = \cf3 SynthDef\cf0 (\cf5 \\rev2\cf0 ,\
+		\{\
+		\cf3 arg\cf0  mix=0.5, room=0.5, damp=0.2, ob; \cf2 //more wet setup\cf0 \
+		\cf3 var\cf0  sig, fil, outsig;\
+		sig = \cf3 In\cf0 .ar(24, 4);\
+		fil = \cf3 FreeVerb\cf0 .ar(sig, mix, room, damp);\
+		\cf3 Out\cf0 .ar(100, fil)\
+		\}\
+	);\
+	\
+\cf2 //for key3	\cf0 \
+~r3 = ~lr3 = \cf3 SynthDef\cf0 (\cf5 \\rev3\cf0 ,\
+		\{\
+		\cf3 arg\cf0  mix=0.2, room=0.9, damp=0.1, ob;\
+		\cf3 var\cf0  sig, fil, outsig;\
+		sig = \cf3 In\cf0 .ar(28, 4);\
+		fil = \cf3 FreeVerb\cf0 .ar(sig, mix, room, damp);\
+		\cf3 Out\cf0 .ar(100, fil)\
+		\}\
+	);\
+	\
+\cf2 //for key4\cf0 \
+~r4 = ~lr4 = \cf3 SynthDef\cf0 (\cf5 \\rev4\cf0 ,\
+		\{\
+		\cf3 arg\cf0  mix=0.9, room=0.9, damp=0.2, ob;\
+		\cf3 var\cf0  sig, fil, outsig;\
+		sig = \cf3 In\cf0 .ar(32, 4);\
+		fil = \cf3 FreeVerb\cf0 .ar(sig, mix, room, damp);\
+		\cf3 Out\cf0 .ar(100, fil)\
+		\}\
+	);\
+\
+	\
+\cf2 //for key5	\cf0 \
+~r5 = ~lr5 = \cf3 SynthDef\cf0 (\cf5 \\rev5\cf0 ,\
+		\{\
+		\cf3 arg\cf0  mix=0.5, room=0.2, damp=0.9, ob;\
+		\cf3 var\cf0  sig, fil, outsig;\
+		sig = \cf3 In\cf0 .ar(36, 4);\
+		fil = \cf3 FreeVerb\cf0 .ar(sig, mix, room, damp);\
+		\cf3 Out\cf0 .ar(100, fil)\
+		\}\
+	);\
+	\
+\cf2 //for key6	\cf0 \
+~r6 = ~lr6 = \cf3 SynthDef\cf0 (\cf5 \\rev6\cf0 ,\
+		\{\
+		\cf3 arg\cf0  mix=0.5, room=0.5, damp=0.1, ob;\
+		\cf3 var\cf0  sig, fil, outsig;\
+		sig = \cf3 In\cf0 .ar(40, 4);\
+		fil = \cf3 FreeVerb\cf0 .ar(sig, mix, room, damp);\
+		\cf3 Out\cf0 .ar(100, fil)\
+		\}\
+	);\
+\cf2 //	\cf0 \
+\cf2 ////for key7	\cf0 \
+\cf2 //~r7 = ~lr7 = SynthDef(\\rev7,\cf0 \
+\cf2 //		\{\cf0 \
+\cf2 //		arg mix=0.5, room=0.5, damp=0.5, ob;\cf0 \
+\cf2 //		var sig, fil, outsig;\cf0 \
+\cf2 //		sig = In.ar(44, 2);\cf0 \
+\cf2 //		fil = FreeVerb.ar(sig, mix, room, damp);\cf0 \
+\cf2 //		Out.ar(100, fil)\cf0 \
+\cf2 //		\}\cf0 \
+\cf2 //	);\cf0 \
+\cf2 //	\cf0 \
+\cf2 ////for key72\cf0 \
+\cf2 //~r72 = ~lr72 = SynthDef(\\rev72,\cf0 \
+\cf2 //		\{\cf0 \
+\cf2 //		arg mix=0.5, room=0.5, damp=0.5, ob;\cf0 \
+\cf2 //		var sig, fil, outsig;\cf0 \
+\cf2 //		sig = In.ar(46, 2);\cf0 \
+\cf2 //		fil = FreeVerb.ar(sig, mix, room, damp);\cf0 \
+\cf2 //		Out.ar(102, fil)\cf0 \
+\cf2 //		\}\cf0 \
+\cf2 //	);	\cf0 \
+\cf2 //\cf0 \
+\cf2 ////for key8	(front)\cf0 \
+\cf2 //~r8 = ~lr8 = SynthDef(\\rev8,\cf0 \
+\cf2 //		\{\cf0 \
+\cf2 //		arg mix=0.5, room=0.5, damp=0.5, ob;\cf0 \
+\cf2 //		var sig, fil, outsig;\cf0 \
+\cf2 //		sig = In.ar(48, 2);\cf0 \
+\cf2 //		fil = FreeVerb.ar(sig, mix, room, damp);\cf0 \
+\cf2 //		Out.ar(100, fil)\cf0 \
+\cf2 //		\}\cf0 \
+\cf2 //	);\cf0 \
+\cf2 //\cf0 \
+\cf2 ////for key8-2(rear)	\cf0 \
+\cf2 //~r82 = ~lr82 = SynthDef(\\rev82,\cf0 \
+\cf2 //		\{\cf0 \
+\cf2 //		arg mix=0.5, room=0.5, damp=0.5, ob;\cf0 \
+\cf2 //		var sig, fil, outsig;\cf0 \
+\cf2 //		sig = In.ar(50, 2);\cf0 \
+\cf2 //		fil = FreeVerb.ar(sig, mix, room, damp);\cf0 \
+\cf2 //		Out.ar(102, fil)\cf0 \
+\cf2 //		\}\cf0 \
+\cf2 //	);\cf0 \
+\
+\
+					\
+\cf2 //master out--------------------------------------\cf0 \
+~ma = ~lma = \cf3 SynthDef\cf0 (\cf5 \\masterout\cf0 ,\
+		\{\
+		\cf3 arg\cf0  amp = 0.5;\
+		\cf3 var\cf0  sig, comsig, outsig;\
+		sig = \cf3 In\cf0 .ar(100, 4);\
+		comsig = \cf3 Compander\cf0 .ar(sig, sig, 0.7, 1, 1/4);\
+		\cf3 Out\cf0 .ar(0, comsig * amp);\
+		\}\
+	);\
+\
+	\
+\cf2 //send to server	\cf0 \
+\
+~s1.memStore;\
+~s2.memStore;\
+~s3.send(s);\
+~s4.send(s);\
+~s5.send(s);\
+~s6.send(s);\
+~s7.send(s);\
+~s72.send(s);\
+~s8.send(s);\
+~s82.send(s);\
+\
+~an1.send(s); \cf2 //analog\cf0 \
+~an2.send(s);\
+~an3.send(s);\
+\cf2 //~an4.send(s);\cf0 \
+\
+~r1.send(s); \cf2 //eff\cf0 \
+~r2.send(s);\
+~r3.send(s);\
+~r4.send(s);\
+~r5.send(s);\
+~r6.send(s);\
+\cf2 //~r7.send(s);\cf0 \
+\cf2 //~r72.send(s);\cf0 \
+\cf2 //~r8.send(s);\cf0 \
+\cf2 //~r82.send(s);\cf0 \
+\
+~ma.send(s); \cf2 //master\cf0 	\
+	\
+
+\fs26 );}
